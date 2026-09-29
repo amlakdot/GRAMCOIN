@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f14">
+  <title>GRAM Trader · ابزار معاملات هوشمند</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --bg-elevated: #12171f;
+      --card: #161c26;
+      --card-hover: #1c2430;
+      --border: #243041;
+      --border-soft: #1a2330;
+      --text: #f0f3f6;
+      --text-secondary: #a8b3c1;
+      --muted: #6b7a8d;
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.12);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59, 130, 246, 0.12);
+      --cyan: #22d3ee;
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --purple: #a78bfa;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.35);
+      --font: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100dvh;
+      padding: 0 0 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Background subtle gradient mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59,130,246,0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(16,185,129,0.06), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* ===== Header ===== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #22d3ee);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+    }
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .brand p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== Live Price Bar ===== */
+    .price-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+    .price-main {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .price-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .price-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+    .price-change {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .price-change.up { background: var(--green-bg); color: var(--green); }
+    .price-change.down { background: var(--red-bg); color: var(--red); }
+    .price-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ===== Stats Grid ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover {
+      border-color: #334155;
+      transform: translateY(-1px);
+    }
+    .stat-card .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .stat-card .value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .stat-card .sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .positive { color: var(--green) !important; }
+    .negative { color: var(--red) !important; }
+
+    /* ===== Section ===== */
+    .section {
+      margin-bottom: 28px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title span.icon {
+      font-size: 1.1rem;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== Form ===== */
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+    @media (min-width: 640px) {
+      .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+      .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+    .field input::placeholder { color: var(--muted); }
+    .field-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    /* Type toggle */
+    .type-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--bg-elevated);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .type-toggle button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .type-toggle button.active-buy {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+    .type-toggle button.active-sell {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red);
+      border-color: transparent;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.22); }
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: 0.8rem;
+    }
+    .btn-block { width: 100%; }
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 10px;
+    }
+
+    /* ===== Targets ===== */
+    .targets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .target-row {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-soft);
+      transition: border-color 0.2s;
+    }
+    .target-row:hover { border-color: var(--border); }
+    .target-pct {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--green);
+    }
+    .target-price {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .target-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .target-profit {
+      text-align: left;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--green);
+      font-size: 0.95rem;
+    }
+
+    /* Simulator */
+    .sim-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .sim-row .field { flex: 1; min-width: 140px; }
+    .sim-result {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-soft);
+      display: none;
+    }
+    .sim-result.show { display: block; animation: fadeIn 0.25s ease; }
+    .sim-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+    @media (max-width: 480px) {
+      .sim-result-grid { grid-template-columns: 1fr; gap: 10px; }
+    }
+    .sim-result-grid .val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .sim-result-grid .lbl {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ===== Trades list (cards on mobile) ===== */
+    .trades-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .trade-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .trade-item:hover { border-color: var(--border); }
+    .trade-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .trade-badge.buy { background: var(--green-bg); color: var(--green); }
+    .trade-badge.sell { background: var(--red-bg); color: var(--red); }
+    .trade-info .main {
+      font-weight: 600;
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .trade-info .sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .trade-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .trade-price {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.9rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+
+    /* ===== Toast ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      width: min(360px, calc(100% - 32px));
+    }
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s ease;
+      pointer-events: auto;
+    }
+    .toast.success { border-color: rgba(16,185,129,0.4); }
+    .toast.error { border-color: rgba(239,68,68,0.4); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ===== Modal ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .modal p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    /* Utility */
+    .hidden { display: none !important; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .gap-2 { gap: 8px; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">◈</div>
+        <div>
+          <h1>GRAM Trader</h1>
+          <p>معاملات هوشمند · افزایش دلار با نوسان</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fetchPrice()" title="بروزرسانی قیمت">
+          ↻ قیمت
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="exportData()" title="خروجی بک‌آپ">
+          ⤓ خروجی
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" title="ورود داده">
+          ⤒ ورود
+        </button>
+        <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
+      </div>
+    </header>
+
+    <!-- Live Price -->
+    <div class="price-bar">
+      <div>
+        <div class="price-label">قیمت لحظه‌ای GRAM</div>
+        <div class="price-main">
+          <span class="price-value" id="livePrice">—</span>
+          <span class="price-change" id="priceChange"></span>
+        </div>
+        <div class="price-meta" id="priceMeta">در حال دریافت از CoinGecko...</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="label">موجودی GRAM</div>
+        <div class="value" id="totalGram">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">میانگین خرید</div>
+        <div class="value" id="avgBuyPrice">—</div>
+        <div class="sub">USDT / GRAM</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">سرمایه فعلی</div>
+        <div class="value" id="investedUsdt">0</div>
+        <div class="sub">USDT</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">ارزش لحظه‌ای</div>
+        <div class="value" id="currentValue">—</div>
+        <div class="sub" id="unrealizedSub">سود/زیان: —</div>
+      </div>
+    </div>
+
+    <!-- Secondary stats -->
+    <div class="stats-grid" style="margin-top:-12px; margin-bottom:24px;">
+      <div class="stat-card" style="grid-column: span 1;">
+        <div class="label">سود تحقق‌یافته</div>
+        <div class="value" id="realizedPnl">0</div>
+        <div class="sub">USDT</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">کل کارمزد شبکه</div>
+        <div class="value" id="totalFees">0</div>
+        <div class="sub">GRAM</div>
+      </div>
+      <div class="stat-card" style="grid-column: span 2;">
+        <div class="label">وضعیت پوزیشن</div>
+        <div class="value" id="positionStatus" style="font-size:1rem;">—</div>
+      </div>
+    </div>
+
+    <!-- Add Trade -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">＋</span> ثبت معامله جدید</h2>
+      </div>
+      <div class="card">
+        <div class="type-toggle mb" style="margin-bottom:16px;">
+          <button type="button" id="btnBuy" class="active-buy" onclick="setTradeType('buy')">خرید GRAM</button>
+          <button type="button" id="btnSell" onclick="setTradeType('sell')">فروش GRAM</button>
+        </div>
+        <input type="hidden" id="tradeType" value="buy">
+
+        <div class="form-grid cols-2">
+          <div class="field">
+            <label>تاریخ و ساعت</label>
+            <input type="datetime-local" id="tradeDate">
+          </div>
+          <div class="field">
+            <label id="gramLabel">مقدار GRAM دریافتی</label>
+            <input type="number" id="gramAmount" step="any" inputmode="decimal" placeholder="مثلاً ۷۰.۴۰">
+          </div>
+          <div class="field">
+            <label id="usdtLabel">مقدار USDT پرداختی</label>
+            <input type="number" id="usdtAmount" step="any" inputmode="decimal" placeholder="مثلاً ۱۰۶.۰۶">
+          </div>
+          <div class="field">
+            <label>کارمزد شبکه (GRAM)</label>
+            <input type="number" id="networkFee" step="any" inputmode="decimal" value="0.0082" placeholder="۰.۰۰۸۲">
+            <div class="field-hint">میانگین معاملات قبلی ≈ ۰.۰۰۸</div>
+          </div>
+        </div>
+        <div class="field mt-3" style="max-width:200px;">
+          <label>کارمزد DEX ٪</label>
+          <input type="number" id="dexFeePct" step="0.01" value="0.07">
+          <div class="field-hint">استون‌فای GRAM/USDT ≈ ۰.۰۷٪</div>
+        </div>
+        <button class="btn btn-primary btn-block mt-4" onclick="addTrade()">
+          ذخیره معامله
+        </button>
+      </div>
+    </section>
+
+    <!-- Sell Targets -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">◎</span> اهداف فروش پیشنهادی</h2>
+      </div>
+      <div class="card">
+        <p style="font-size:0.82rem; color:var(--muted); margin-bottom:14px;">
+          قیمت لازم برای سود خالص بعد از کارمزد رفت‌وبرگشت (~۰.۲٪). روی هر ردیف می‌تونی سریع شبیه‌سازی کنی.
+        </p>
+        <div class="targets-list" id="targetsBody"></div>
+      </div>
+    </section>
+
+    <!-- Simulator -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">◇</span> شبیه‌ساز فروش</h2>
+      </div>
+      <div class="card">
+        <div class="sim-row">
+          <div class="field">
+            <label>قیمت فروش فرضی (USDT)</label>
+            <input type="number" id="simPrice" step="0.001" inputmode="decimal" placeholder="مثلاً ۱.۵۵">
+          </div>
+          <button class="btn btn-primary" onclick="simulateSell()" style="height:44px;">محاسبه</button>
+        </div>
+        <div class="sim-result" id="simResult">
+          <div class="sim-result-grid">
+            <div>
+              <div class="val" id="simUsdt">—</div>
+              <div class="lbl">USDT خالص</div>
+            </div>
+            <div>
+              <div class="val" id="simProfit">—</div>
+              <div class="lbl">سود/زیان</div>
+            </div>
+            <div>
+              <div class="val" id="simPct">—</div>
+              <div class="lbl">درصد</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- History -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">☰</span> تاریخچه معاملات</h2>
+        <button class="btn btn-danger btn-sm" onclick="confirmClear()">پاک‌سازی همه</button>
+      </div>
+      <div class="card" style="padding:12px;">
+        <div class="trades-list" id="tradesBody"></div>
+      </div>
+    </section>
+
+    <footer>
+      کارمزدها بر اساس تراکنش‌های واقعی STON.fi · قیمت از CoinGecko<br>
+      داده‌ها فقط روی همین دستگاه ذخیره می‌شوند
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Confirm Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <h3 id="modalTitle">تأیید</h3>
+      <p id="modalText">آیا مطمئن هستید؟</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">انصراف</button>
+        <button class="btn btn-danger" id="modalConfirmBtn">حذف</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const DEFAULT_NETWORK_FEE = 0.0082;
+  const DEFAULT_DEX_FEE_PCT = 0.07;
+  const ROUND_TRIP_FEE_PCT = 0.20;
+
+  let trades = [];
+  let livePrice = null;
+  let pendingAction = null;
+
+  function load() {
+    const saved = localStorage.getItem('gram_trades_v2');
+    if (saved) {
+      trades = JSON.parse(saved);
+    } else {
+      // مهاجرت از نسخه قبلی یا داده اولیه
+      const old = localStorage.getItem('gram_trades_v1');
+      if (old) {
+        trades = JSON.parse(old);
+      } else {
+        trades = [
+          {
+            id: 1,
+            type: 'sell',
+            date: '2026-09-12T22:37',
+            gram: 75.364750959,
+            usdt: 103.57,
+            networkFee: 0.007902632,
+            dexFeePct: 0.07,
+            price: 103.57 / 75.364750959
+          },
+          {
+            id: 2,
+            type: 'buy',
+            date: '2026-09-30T01:20',
+            gram: 70.403801601,
+            usdt: 106.06,
+            networkFee: 0.008243583,
+            dexFeePct: 0.07,
+            price: 106.06 / 70.403801601
+          }
+        ];
+      }
+      save();
+    }
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('tradeDate').value = now.toISOString().slice(0, 16);
+    setTradeType('buy');
+    render();
+    fetchPrice();
+  }
+
+  function save() {
+    localStorage.setItem('gram_trades_v2', JSON.stringify(trades));
+  }
+
+  function toast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = (type === 'success' ? '✓ ' : '✕ ') + msg;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.3s';
+      setTimeout(() => el.remove(), 300);
+    }, 2800);
+  }
+
+  function setTradeType(type) {
+    document.getElementById('tradeType').value = type;
+    const buyBtn = document.getElementById('btnBuy');
+    const sellBtn = document.getElementById('btnSell');
+    buyBtn.className = type === 'buy' ? 'active-buy' : '';
+    sellBtn.className = type === 'sell' ? 'active-sell' : '';
+    document.getElementById('gramLabel').textContent =
+      type === 'buy' ? 'مقدار GRAM دریافتی' : 'مقدار GRAM فروخته‌شده';
+    document.getElementById('usdtLabel').textContent =
+      type === 'buy' ? 'مقدار USDT پرداختی' : 'مقدار USDT دریافتی';
+  }
+
+  async function fetchPrice() {
+    const el = document.getElementById('livePrice');
+    const ch = document.getElementById('priceChange');
+    const meta = document.getElementById('priceMeta');
+    el.textContent = '...';
+    ch.className = 'price-change';
+    ch.textContent = '';
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd&include_24hr_change=true'
+      );
+      const data = await res.json();
+      if (data['the-open-network']) {
+        livePrice = data['the-open-network'].usd;
+        const change = data['the-open-network'].usd_24h_change || 0;
+        el.textContent = livePrice.toFixed(4);
+        ch.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
+        ch.textContent = (change >= 0 ? '▲ ' : '▼ ') + Math.abs(change).toFixed(2) + '٪';
+        meta.textContent = 'آخرین بروزرسانی · CoinGecko';
+        render();
+      } else {
+        el.textContent = '—';
+        meta.textContent = 'داده دریافت نشد';
+      }
+    } catch {
+      el.textContent = '—';
+      meta.textContent = 'خطا در اتصال · بعداً دوباره امتحان کن';
+    }
+  }
+
+  function calcState() {
+    let totalFeesGram = 0;
+    let realizedPnl = 0;
+    let inventory = [];
+
+    trades.forEach(t => {
+      totalFeesGram += (t.networkFee || 0);
+      if (t.type === 'buy') {
+        const netGram = t.gram * (1 - (t.dexFeePct || DEFAULT_DEX_FEE_PCT) / 100);
+        const costPer = t.usdt / netGram;
+        inventory.push({ gram: netGram, costPer });
+      } else {
+        let remaining = t.gram;
+        let costBasis = 0;
+        while (remaining > 1e-9 && inventory.length) {
+          const lot = inventory[0];
+          const take = Math.min(remaining, lot.gram);
+          costBasis += take * lot.costPer;
+          lot.gram -= take;
+          remaining -= take;
+          if (lot.gram < 1e-9) inventory.shift();
+        }
+        if (remaining > 0) {
+          const avg = inventory.reduce((s, l) => s + l.gram * l.costPer, 0) /
+            (inventory.reduce((s, l) => s + l.gram, 0) || 1);
+          costBasis += remaining * (avg || t.price);
+        }
+        realizedPnl += t.usdt - costBasis;
+      }
+    });
+
+    let remainingGram = 0, remainingCost = 0;
+    inventory.forEach(lot => {
+      remainingGram += lot.gram;
+      remainingCost += lot.gram * lot.costPer;
+    });
+
+    const avgBuy = remainingGram > 0 ? remainingCost / remainingGram : 0;
+    const currentVal = livePrice ? remainingGram * livePrice : 0;
+    const unrealized = currentVal - remainingCost;
+
+    return {
+      totalGram: remainingGram,
+      avgBuyPrice: avgBuy,
+      investedUsdt: remainingCost,
+      currentValue: currentVal,
+      unrealizedPnl: unrealized,
+      totalFeesGram,
+      realizedPnl
+    };
+  }
+
+  function render() {
+    const s = calcState();
+
+    document.getElementById('totalGram').textContent = fmt(s.totalGram, 4);
+    document.getElementById('avgBuyPrice').textContent = s.avgBuyPrice ? fmt(s.avgBuyPrice, 4) : '—';
+    document.getElementById('investedUsdt').textContent = fmt(s.investedUsdt, 2);
+    document.getElementById('currentValue').textContent = livePrice ? fmt(s.currentValue, 2) : '—';
+
+    const sub = document.getElementById('unrealizedSub');
+    if (livePrice && s.totalGram > 0) {
+      const sign = s.unrealizedPnl >= 0 ? '+' : '';
+      sub.textContent = `سود/زیان: ${sign}${fmt(s.unrealizedPnl, 2)} USDT`;
+      sub.className = 'sub ' + (s.unrealizedPnl >= 0 ? 'positive' : 'negative');
+    } else {
+      sub.textContent = 'سود/زیان: —';
+      sub.className = 'sub';
+    }
+
+    const rp = document.getElementById('realizedPnl');
+    rp.textContent = (s.realizedPnl >= 0 ? '+' : '') + fmt(s.realizedPnl, 2);
+    rp.className = 'value ' + (s.realizedPnl >= 0 ? 'positive' : 'negative');
+
+    document.getElementById('totalFees').textContent = fmt(s.totalFeesGram, 5);
+
+    const status = document.getElementById('positionStatus');
+    if (s.totalGram <= 0) {
+      status.textContent = 'بدون پوزیشن باز';
+      status.className = 'value';
+    } else if (livePrice) {
+      const pct = (s.unrealizedPnl / s.investedUsdt) * 100;
+      status.textContent = (pct >= 0 ? 'در سود ' : 'در زیان ') + Math.abs(pct).toFixed(2) + '٪';
+      status.className = 'value ' + (pct >= 0 ? 'positive' : 'negative');
+    } else {
+      status.textContent = 'در انتظار قیمت';
+    }
+
+    renderTargets(s);
+    renderTrades();
+  }
+
+  function renderTargets(s) {
+    const body = document.getElementById('targetsBody');
+    if (s.totalGram <= 0 || !s.avgBuyPrice) {
+      body.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">◎</div>
+          <div>برای دیدن اهداف فروش، ابتدا GRAM بخر</div>
+        </div>`;
+      return;
+    }
+
+    const targets = [1, 2, 3, 5, 7, 10, 15, 20];
+    body.innerHTML = targets.map(pct => {
+      const needed = s.avgBuyPrice * (1 + pct / 100) / (1 - ROUND_TRIP_FEE_PCT / 100);
+      const usdtOut = s.totalGram * needed * (1 - DEFAULT_DEX_FEE_PCT / 100);
+      const netProfit = usdtOut - s.investedUsdt;
+      return `
+        <div class="target-row" onclick="fillSim(${needed.toFixed(4)})" style="cursor:pointer" title="کلیک برای شبیه‌سازی">
+          <div class="target-pct">+${pct}٪</div>
+          <div>
+            <div class="target-price">${fmt(needed, 4)} USDT</div>
+            <div class="target-meta">≈ ${fmt(usdtOut, 2)} USDT دریافتی</div>
+          </div>
+          <div class="target-profit">+${fmt(netProfit, 2)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function fillSim(price) {
+    document.getElementById('simPrice').value = price;
+    simulateSell();
+    document.getElementById('simPrice').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function renderTrades() {
+    const body = document.getElementById('tradesBody');
+    if (!trades.length) {
+      body.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">☰</div>
+          <div>هنوز معامله‌ای ثبت نشده</div>
+        </div>`;
+      return;
+    }
+
+    body.innerHTML = [...trades].reverse().map(t => `
+      <div class="trade-item">
+        <div class="trade-badge ${t.type}">${t.type === 'buy' ? 'خرید' : 'فروش'}</div>
+        <div class="trade-info">
+          <div class="main">${fmt(t.gram, 4)} GRAM · ${fmt(t.usdt, 2)} USDT</div>
+          <div class="sub">${formatDate(t.date)} · کارمزد ${fmt(t.networkFee || 0, 5)}</div>
+        </div>
+        <div class="trade-actions">
+          <div class="trade-price">${fmt(t.price, 4)}</div>
+          <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:0.75rem;" onclick="deleteTrade(${t.id})">حذف</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function simulateSell() {
+    const price = parseFloat(document.getElementById('simPrice').value);
+    const box = document.getElementById('simResult');
+    if (!price || price <= 0) {
+      toast('قیمت معتبر وارد کن', 'error');
+      return;
+    }
+    const s = calcState();
+    if (s.totalGram <= 0) {
+      toast('موجودی GRAM نداری', 'error');
+      return;
+    }
+    const usdtNet = s.totalGram * price * (1 - DEFAULT_DEX_FEE_PCT / 100);
+    const profit = usdtNet - s.investedUsdt;
+    const pct = (profit / s.investedUsdt) * 100;
+
+    document.getElementById('simUsdt').textContent = fmt(usdtNet, 2);
+    const pEl = document.getElementById('simProfit');
+    pEl.textContent = (profit >= 0 ? '+' : '') + fmt(profit, 2);
+    pEl.className = 'val ' + (profit >= 0 ? 'positive' : 'negative');
+    const pctEl = document.getElementById('simPct');
+    pctEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '٪';
+    pctEl.className = 'val ' + (pct >= 0 ? 'positive' : 'negative');
+    box.classList.add('show');
+  }
+
+  function addTrade() {
+    const type = document.getElementById('tradeType').value;
+    const date = document.getElementById('tradeDate').value;
+    const gram = parseFloat(document.getElementById('gramAmount').value);
+    const usdt = parseFloat(document.getElementById('usdtAmount').value);
+    const networkFee = parseFloat(document.getElementById('networkFee').value) || DEFAULT_NETWORK_FEE;
+    const dexFeePct = parseFloat(document.getElementById('dexFeePct').value) || DEFAULT_DEX_FEE_PCT;
+
+    if (!date || !gram || !usdt || gram <= 0 || usdt <= 0) {
+      toast('همه فیلدهای اصلی را پر کن', 'error');
+      return;
+    }
+
+    trades.push({
+      id: Date.now(),
+      type,
+      date,
+      gram,
+      usdt,
+      networkFee,
+      dexFeePct,
+      price: usdt / gram
+    });
+    save();
+    render();
+    document.getElementById('gramAmount').value = '';
+    document.getElementById('usdtAmount').value = '';
+    toast('معامله ذخیره شد');
+  }
+
+  function deleteTrade(id) {
+    pendingAction = () => {
+      trades = trades.filter(t => t.id !== id);
+      save();
+      render();
+      toast('معامله حذف شد');
+    };
+    openModal('حذف معامله', 'این معامله برای همیشه حذف می‌شود.', pendingAction);
+  }
+
+  function confirmClear() {
+    pendingAction = () => {
+      trades = [];
+      save();
+      render();
+      toast('همه معاملات پاک شدند');
+    };
+    openModal('پاک‌سازی کامل', 'تمام تاریخچه معاملات حذف می‌شود. این عمل قابل بازگشت نیست.', pendingAction);
+  }
+
+  function openModal(title, text, onConfirm) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalText').textContent = text;
+    document.getElementById('modalConfirmBtn').onclick = () => {
+      onConfirm();
+      closeModal();
+    };
+    document.getElementById('confirmModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+    pendingAction = null;
+  }
+
+  function exportData() {
+    const blob = new Blob([JSON.stringify(trades, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gram-trades-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('فایل خروجی آماده شد');
+  }
+
+  function importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (Array.isArray(data)) {
+          trades = data;
+          save();
+          render();
+          toast('داده‌ها با موفقیت وارد شدند');
+        } else toast('فرمت فایل نامعتبر است', 'error');
+      } catch {
+        toast('خطا در خواندن فایل', 'error');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleString('fa-IR', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      });
+    } catch { return iso; }
+  }
+
+  function fmt(n, d = 2) {
+    if (n == null || isNaN(n)) return '—';
+    return Number(n).toLocaleString('en-US', {
+      minimumFractionDigits: d,
+      maximumFractionDigits: d
+    });
+  }
+
+  // بستن مودال با کلیک بیرون
+  document.getElementById('confirmModal').addEventListener('click', e => {
+    if (e.target.id === 'confirmModal') closeModal();
+  });
+
+  load();
+</script>
+</body>
+</html>
